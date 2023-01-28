@@ -22,5 +22,8 @@ A simple multi-page AirBnb clone that uses Javascript to display information fro
 ## Screenshots
 
 ![Screenshot of logged-in user My Reservations Page](/screenshots/lightbnb-my-reservations.jpg)
+A logged in user in their My Reservations page.
 ![Screenshot of search page form](/screenshots/lightbnb-search.jpg)
+The search box form used to filter properties.
 ![Screenshot of Create Listings page form](/screenshots/lightbnb-create-listing.jpg)
+The create listing form for posting a property.
