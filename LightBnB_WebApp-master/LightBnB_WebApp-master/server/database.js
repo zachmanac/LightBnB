@@ -1,5 +1,3 @@
-// const properties = require('./json/properties.json');
-// const users = require('./json/users.json');
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -8,13 +6,6 @@ const pool = new Pool({
   host: 'localhost',
   database: 'lightbnb'
 });
-
-// pool.connect();
-// TEST EXAMPLE
-// pool.query('SELECT * FROM users LIMIT 5')
-//   .then((response) => {
-//     console.log(response.rows);
-//   });
 
 /// Users
 
@@ -53,10 +44,12 @@ exports.getUserWithId = getUserWithId;
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser =  function(user) {
+  let queryString = `INSERT INTO users (name, password, email)
+  VALUES ($1, $2, $3)
+  RETURNING *;`;
+
   return pool
-    .query(`INSERT INTO users (name, password, email)
-      VALUES ($1, $2, $3)
-      RETURNING *;`, [user.name, user.password, user.email])
+    .query(queryString, [user.name, user.password, user.email])
         .then ((response) => {
           return response.rows[0];
         })
@@ -106,7 +99,6 @@ const getAllProperties = function(options, limit = 10) {
   WHERE 1 = 1 
   `;
 
-
   if (options.city) {
     queryParams.push(`%${options.city}%`);
     queryString += `AND city LIKE $${queryParams.length} `;
@@ -143,7 +135,7 @@ const getAllProperties = function(options, limit = 10) {
     LIMIT $${queryParams.length};
   `};
 
-  console.log(queryString, queryParams);
+  // console.log(queryString, queryParams);
 
   return pool
     .query(queryString, queryParams)
@@ -157,9 +149,19 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+
+  let queryString = `INSERT INTO properties (title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code, country, parking_spaces, number_of_bathrooms, number_of_bedrooms, owner_id)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+  RETURNING *;`;
+
+  let queryParams = [property.title, property.description, property.thumbnail_photo_url, property.cover_photo_url, property.cost_per_night, property.street, property.city, property.province, property.post_code, property.country, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms, property.owner_id];
+  // variable to make poolquery more readable
+
+  return pool
+    .query(queryString, queryParams)
+      .then ((response) => {
+        // console.log(response.rows);
+        return response.rows;
+      })
 }
 exports.addProperty = addProperty;
